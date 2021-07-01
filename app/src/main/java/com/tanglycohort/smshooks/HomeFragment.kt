@@ -13,6 +13,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 
 class HomeFragment : Fragment() {
+    private var askedForPermissions = false
     private val registrationToAskPermission =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -22,21 +23,22 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onResume() {
+        super.onResume()
         if (ContextCompat.checkSelfPermission(
                 requireContext(), Manifest.permission.RECEIVE_SMS
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
-        } else {
-            registrationToAskPermission.launch(Manifest.permission.RECEIVE_SMS)
-        }
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
-
-    private fun onAskPermissionResult(isGranted: Boolean) {
-        if (isGranted) {
-            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
-        } else {
+        } else if (askedForPermissions) {
+            askedForPermissions = false
             if (shouldShowRequestPermissionRationale(Manifest.permission.RECEIVE_SMS)) {
                 NavOptions.Builder().apply {
                     setEnterAnim(R.anim.slide_in_bottom)
@@ -44,18 +46,18 @@ class HomeFragment : Fragment() {
                     findNavController().navigate(R.id.permissionsEduFragment, null, build())
                 }
             } else {
-                /**
-                 * Possible reasons:
-                 *  - User clicked the "Deny & Don't Ask Again" option
-                 *  - User clicked deny multiple times
-                 *  - User dismissed the permissions dialog without choosing an option
-                 */
                 NavOptions.Builder().apply {
                     setEnterAnim(R.anim.slide_in_bottom)
                     setPopExitAnim(R.anim.slide_out_bottom)
                     findNavController().navigate(R.id.permissionsDeniedFragment, null, build())
                 }
             }
+        } else {
+            registrationToAskPermission.launch(Manifest.permission.RECEIVE_SMS)
         }
+    }
+
+    private fun onAskPermissionResult(isGranted: Boolean) {
+        askedForPermissions = true
     }
 }

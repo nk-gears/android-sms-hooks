@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.tanglycohort.smshooks.SettingsFragment"
+        android:name="com.tanglycohort.smshooks.SettingsFragmentContainer"
         android:label="Preferences">
         <action
             android:id="@+id/action_settingsFragment_to_urlPreferenceDialogFragment"

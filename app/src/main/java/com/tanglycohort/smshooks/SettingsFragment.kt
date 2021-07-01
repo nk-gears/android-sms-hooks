@@ -83,7 +83,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onWebhookUrlClick(preference: Preference): Boolean {
-        SettingsFragmentDirections.apply {
+        SettingsFragmentContainerDirections.apply {
             actionSettingsFragmentToUrlPreferenceDialogFragment(
                 initialValue = preferences.getString(preference.key, "")!!,
                 key = preference.key,
